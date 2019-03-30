@@ -9,8 +9,8 @@
 
 # these two lines just ask the user for and expression to make
 # into a NFA, and get a string to compare against
-userExpression = input("Please enter a infix Expression: ")
-userString = input("Please enter a string to compare against the NFA: ")
+#userExpression = input("Please enter a infix Expression: ")
+#userString = input("Please enter a string to compare against the NFA: ")
 
 
 def shunt(infix):
@@ -135,3 +135,66 @@ def compile(postfix):
 
     # should only have a single nfa
     return nfstack.pop()
+
+#############################################################################################################################
+# above is the code for the thompsons. chaning the postfix from shunting into an nfa
+
+
+def followes(state):
+    # return the set of states that can be readed from the state following e arrows
+    # create a new set as state as its only member
+
+    states = set()
+    states.add(state)
+
+    # check is state has arrows labelled e from it
+    if state.label is None:
+        # check if edge is a state
+        if state.edge1 is not None:
+            # if therse an edge1, foolow it
+            states |= followes(state.edge1)
+        if state.edge2 is not None:
+            # if therse an edge1, foolow it
+            states |= followes(state.edge2)
+
+    return states
+
+
+def match(userExpression, userString):
+
+    # compiles the postfix from the shunting algorithum
+    postfix = shunt(userExpression)
+    nfa = compile(postfix)
+
+    # current set of states and the next set of states
+    current = set()
+    nexts = set()
+
+    # add the initial state to the current set
+    current |= followes(nfa.initial)
+
+    # loop through each char in string
+    for s in userString:
+        for c in current:
+            # check if that state is labeled s
+            if c.label == s:
+                # add the edge1 state to the next set, including all the other sets that you've followed
+                nexts |= followes(c.edge1)
+        # set current to next, and clear out next
+        current = nexts
+        nexts = set()
+
+    # check is accept state is in the set of the current states
+    return(nfa.accept in current)
+
+
+infixes = ["a.b.c", "a.(b).c*", "(a.(b|d))*","a.(b.b)*.c*"]
+strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
+
+
+#infixes = ["a.b.c*", "a.(b|d).c*", "(a.(b|d))*","a.(b.b)*.c*"]
+#strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
+
+for i in infixes:
+    for s in strings:
+        print(match(i, s), i ,s)
