@@ -10,12 +10,12 @@
 # these two lines just ask the user for and expression to make
 # into a NFA, and get a string to compare against
 #userExpression = input("Please enter a infix Expression: ")
-#userString = input("Please enter a string to compare against the NFA: ")
+#string = input("Please enter a string to compare against the NFA: ")
 
 
 def shunt(infix):
 
-    specials = {'*': 3, '.': 2, '|': 1}
+    specials = {'*': 50, '.': 40, '|': 30}
     # creates dictionary
 
     # making the profix and stack variales
@@ -52,8 +52,6 @@ def shunt(infix):
         postfix = postfix + stack[-1]
         stack = stack[:-1]
 
-    compile(postfix)
-
     return postfix
 
 
@@ -66,7 +64,6 @@ class state:
     edge2 = None
 
 # this class just makes the variables for the nfa. the accept state and the initial state
-
 
 class nfa:
     initial = None
@@ -105,9 +102,9 @@ def compile(postfix):
             # of the two nfa's popped of the stack, to the new state
             accept = state()
             nfa1.accept.edge1 = accept
-            nfa2.accept.edge2 = accept
+            nfa2.accept.edge1 = accept
             # push new nfa to the stack
-            newNfa = nfa(nfa1.initial, nfa2.accept)
+            newNfa = nfa(initial, accept)
             nfstack.append(newNfa)
 
         elif c == '*':
@@ -123,7 +120,7 @@ def compile(postfix):
             nfa1.accept.edge1 = nfa1.initial
             nfa1.accept.edge2 = accept
             # push the new nfa to the stack
-            newNfa = nfa(nfa1.initial, nfa2.accept)
+            newNfa = nfa(initial, accept)
             nfstack.append(newNfa)
 
         else:
@@ -160,10 +157,10 @@ def followes(state):
     return states
 
 
-def match(userExpression, userString):
+def match(infix, string):
 
     # compiles the postfix from the shunting algorithum
-    postfix = shunt(userExpression)
+    postfix = shunt(infix)
     nfa = compile(postfix)
 
     # current set of states and the next set of states
@@ -174,7 +171,7 @@ def match(userExpression, userString):
     current |= followes(nfa.initial)
 
     # loop through each char in string
-    for s in userString:
+    for s in string:
         for c in current:
             # check if that state is labeled s
             if c.label == s:
@@ -187,13 +184,8 @@ def match(userExpression, userString):
     # check is accept state is in the set of the current states
     return(nfa.accept in current)
 
-
-infixes = ["a.b.c", "a.(b).c*", "(a.(b|d))*","a.(b.b)*.c*"]
+infixes = ["a.b.c*", "a.(b).c*", "(a.(b|d))*","a.(b.b)*.c*"]
 strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
-
-
-#infixes = ["a.b.c*", "a.(b|d).c*", "(a.(b|d))*","a.(b.b)*.c*"]
-#strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
 
 for i in infixes:
     for s in strings:
