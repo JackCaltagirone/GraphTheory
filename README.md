@@ -22,4 +22,17 @@ approately named
 
 Step 2: I now take the user entered expression and parse it through the shunting yard algoritim. 
 Parsing it through the algoritim will change the user inputed infix notation expression to a postfix notation expression.
+I started of by creating the dictionary of the operaters. the special characters have
+precedence in the order of: * . | ? +. we do this because the * is always counted first, much
+like bimdas that there is precedence in it.
 
+made the profix and stack variables. the stack is for the all the special characters as well as the open brackets.
+shunting adds all the special charaters and brackets to the stack. when it encounters a close bracket, it must have encountered an open bracket. therefore when it encounters a closed braket it will add everything to the postfix until it reaches the open bracket. 
+it then repeats this until there are no bracket.
+
+The while at lines 42 to 45 have a while that will loop through the stack at the end of the expression and add all the remaining items to the expression.
+thats basicly how the shunting works and the first part of the project. I will take that post fix notation  expression and push it through to the thompsons which is step 3
+
+
+Step 3: With the third step, I'm taking the postfix from step 2 and turning it into a non deterministic finite automata.
+to do this 
