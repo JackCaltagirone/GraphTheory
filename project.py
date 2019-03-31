@@ -9,13 +9,13 @@
 
 # these two lines just ask the user for and expression to make
 # into a NFA, and get a string to compare against
-#userExpression = input("Please enter a infix Expression: ")
-#string = input("Please enter a string to compare against the NFA: ")
+infix = input("Please enter a infix Expression: ")
+string = input("Please enter a string to compare against the NFA: ")
 
 
 def shunt(infix):
 
-    specials = {'*': 50, '.': 40, '|': 30}
+    specials = {'*': 50, '.': 40, '|': 30, '?': 30, '+':30}
     # creates dictionary
 
     # making the profix and stack variales
@@ -123,6 +123,37 @@ def compile(postfix):
             newNfa = nfa(initial, accept)
             nfstack.append(newNfa)
 
+            
+        elif c == '?':
+            # pop a single nfa from the stack
+            nfa1 = nfstack.pop()
+            # create new initial and accpet states
+            initial = state()
+            accept = state()
+            # join the new initial state to nfas initial state and the new acept state
+            initial.edge1 = nfa1.initial
+            initial.edge2 = accept
+            # join old accept state to the new accept state and nfa1's initial state
+            nfa1.accept.edge2 = accept
+            # push the new nfa to the stack
+            newNfa = nfa(initial, accept)
+            nfstack.append(newNfa)
+        
+        elif c == '+':
+            # pop a single nfa from the stack
+            nfa1 = nfstack.pop()
+            # create new initial and accpet states
+            initial = state()
+            accept = state()
+            # join the new initial state to nfas initial state and the new acept state
+            initial.edge1 = nfa1.initial
+            # join old accept state to the new accept state and nfa1's initial state
+            nfa1.accept.edge1 = nfa1.initial
+            nfa1.accept.edge2 = accept
+            # push the new nfa to the stack
+            newNfa = nfa(initial, accept)
+            nfstack.append(newNfa)
+
         else:
             accept = state()
             initial = state()
@@ -184,9 +215,8 @@ def match(infix, string):
     # check is accept state is in the set of the current states
     return(nfa.accept in current)
 
-infixes = ["a.b.c*", "a.(b).c*", "(a.(b|d))*","a.(b.b)*.c*"]
-strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
+#infixes = ["a.b.c*", "a.(b).c*", "(a.(b|d))*","a.(b.b)*.c*"]
+#strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
 
-for i in infixes:
-    for s in strings:
-        print(match(i, s), i ,s)
+#print the user input and string comparision to see if they match
+print(match(infix, string), infix ,string)
