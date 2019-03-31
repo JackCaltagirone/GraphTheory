@@ -79,6 +79,7 @@ def compile(postfix):
 
     for c in postfix:
 
+        #follows
         if c == '.':
             # pop two nfas off the stack
             nfa2 = nfstack.pop()
@@ -89,6 +90,7 @@ def compile(postfix):
             newNfa = nfa(nfa1.initial, nfa2.accept)
             nfstack.append(newNfa)
 
+        #or
         elif c == '|':
             # pop two nfas off the stack
             nfa2 = nfstack.pop()
@@ -107,6 +109,7 @@ def compile(postfix):
             newNfa = nfa(initial, accept)
             nfstack.append(newNfa)
 
+        #one or many
         elif c == '*':
             # pop a single nfa from the stack
             nfa1 = nfstack.pop()
@@ -123,7 +126,7 @@ def compile(postfix):
             newNfa = nfa(initial, accept)
             nfstack.append(newNfa)
 
-            
+        #goes to privious state
         elif c == '?':
             # pop a single nfa from the stack
             nfa1 = nfstack.pop()
@@ -139,6 +142,7 @@ def compile(postfix):
             newNfa = nfa(initial, accept)
             nfstack.append(newNfa)
         
+        #at least one of
         elif c == '+':
             # pop a single nfa from the stack
             nfa1 = nfstack.pop()
@@ -154,6 +158,7 @@ def compile(postfix):
             newNfa = nfa(initial, accept)
             nfstack.append(newNfa)
 
+        #else its just an accept state
         else:
             accept = state()
             initial = state()
@@ -214,9 +219,6 @@ def match(infix, string):
 
     # check is accept state is in the set of the current states
     return(nfa.accept in current)
-
-#infixes = ["a.b.c*", "a.(b).c*", "(a.(b|d))*","a.(b.b)*.c*"]
-#strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
 
 #print the user input and string comparision to see if they match
 print(match(infix, string), infix ,string)
